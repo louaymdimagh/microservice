@@ -1,0 +1,24 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Product {
+  id: ID!
+  name: String!
+  price: Float!
+  stock: Float!
+}
+
+type Order {
+  id: ID!
+  productId: ID!
+  quantity: Float!
+  status: String!
+  customerEmail: String!
+}
+
+type Query {
+  products: [Product!]!
+  orders: [Order!]!
+  orderById(id: Int!): Order
+}
