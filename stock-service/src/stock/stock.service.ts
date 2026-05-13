@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { GrpcMethod } from '@nestjs/microservices';
 
 interface StockRequest {
   productId: number;
@@ -19,13 +18,16 @@ export class StockService {
     [2, 5],  // productId 2 has 5 stock
   ]);
 
-  @GrpcMethod('StockService', 'CheckAndReserve')
   checkAndReserve(data: StockRequest): StockResponse {
-    const { productId, quantity } = data;
-    const currentStock = this.stock.get(productId) || 0;
+    // int64 from gRPC may arrive as Long object or string — coerce to number
+    const pid = Number(data.productId);
+    const qty = Number(data.quantity);
+    const currentStock = this.stock.get(pid) ?? 0;
 
-    if (currentStock >= quantity) {
-      this.stock.set(productId, currentStock - quantity);
+    console.log(`CheckAndReserve: productId=${pid}, quantity=${qty}, currentStock=${currentStock}`);
+
+    if (currentStock >= qty) {
+      this.stock.set(pid, currentStock - qty);
       return { available: true, message: 'Stock reserved successfully' };
     } else {
       return { available: false, message: `Insufficient stock. Available: ${currentStock}` };

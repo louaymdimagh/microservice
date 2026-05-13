@@ -52,41 +52,167 @@ cd query-service && npm run start:dev
 
 ---
 
-## 🧪 Comment tester le projet ? (Scénario de Validation)
+## 🧪 Résultats des Tests (Scénario de Validation Complet)
 
-Une fois tous les services en cours d'exécution, vous pouvez dérouler le scénario de test complet pour vérifier la communication inter-services :
+> Tests exécutés avec tous les services opérationnels. ✅ = Succès | ❌ = Erreur attendue (comportement correct)
 
-### Étape 1 : Créer des produits (Catalog Service)
-Effectuez une requête POST vers le **Catalog Service** :
+---
+
+### ✅ Étape 1 — GET /products (Catalog Service - Port 3000)
+
+**Requête :**
+```bash
+curl http://localhost:3000/products
+```
+
+**Réponse :**
+```json
+[
+  { "id": 1, "name": "Laptop",    "price": 1200, "stock": 10 },
+  { "id": 2, "name": "PC Gamer",  "price": 1200, "stock": 5  },
+  { "id": 3, "name": "PC lenovo", "price": 1000, "stock": 7  }
+]
+```
+> 📌 Le Catalog Service répond sur le port 3000 via REST. Les produits sont persistés en SQLite.
+
+---
+
+### ✅ Étape 2 — POST /products (Créer un nouveau produit)
+
+**Requête :**
 ```bash
 curl -X POST http://localhost:3000/products \
      -H "Content-Type: application/json" \
-     -d "{\"name\":\"PC Gamer\",\"price\":1200,\"stock\":5}"
+     -d '{"name":"Smartphone Samsung","price":800,"stock":15}'
 ```
 
-### Étape 2 : Passer une commande valide (Order, Stock & Kafka)
-Effectuez une requête POST vers l'**Order Service**. Ce dernier appellera le *Stock Service* (gRPC) et publiera un message sur *Kafka*.
+**Réponse :**
+```json
+{ "id": 4, "name": "Smartphone Samsung", "price": 800, "stock": 15 }
+```
+> 📌 Produit créé avec succès. L'ID est auto-incrémenté par TypeORM/SQLite.
+
+---
+
+### ✅ Étape 3 — POST /orders (Commande valide — gRPC + Kafka)
+
+**Requête :**
 ```bash
 curl -X POST http://localhost:3002/orders \
      -H "Content-Type: application/json" \
-     -d "{\"productId\":1,\"quantity\":2,\"customerEmail\":\"jean@dupont.com\"}"
+     -d '{"productId":1,"quantity":2,"customerEmail":"jean@dupont.com"}'
 ```
-*Vérification : Le Terminal 4 (Notification) affichera automatiquement un log confirmant la réception de l'événement Kafka.*
 
-### Étape 3 : Tester une commande sans stock (Validation gRPC)
-Testez le blocage gRPC en commandant plus de produits qu'il n'y en a en stock (ex: quantité de 10) :
+**Réponse :**
+```json
+{ "id": 1, "productId": 1, "quantity": 2, "status": "confirmed", "customerEmail": "jean@dupont.com" }
+```
+
+**Log Notification Service (Terminal 4) :**
+```
+[Nest] LOG [ServerKafka] Consumer has joined the group
+Notification service listening on Kafka
+✉️  Email de confirmation envoyé à jean@dupont.com — Commande #1 validée !
+```
+> 📌 Flux complet : Order Service → gRPC → Stock Service (décrément stock) → Kafka → Notification Service (email simulé).
+
+---
+
+### ❌ Étape 4 — POST /orders (Stock insuffisant — Validation gRPC)
+
+**Requête :**
 ```bash
 curl -X POST http://localhost:3002/orders \
      -H "Content-Type: application/json" \
-     -d "{\"productId\":1,\"quantity\":10,\"customerEmail\":\"jean@dupont.com\"}"
+     -d '{"productId":1,"quantity":100,"customerEmail":"test@test.com"}'
 ```
-*Vérification : Vous recevrez un Code HTTP 500 - "Stock insuffisant".*
 
-### Étape 4 : Interroger les données (GraphQL)
-Ouvrez votre navigateur sur [http://localhost:3003/graphql](http://localhost:3003/graphql) et exécutez la requête suivante pour récupérer vos données depuis le Dashboard :
+**Réponse :**
+```json
+{ "statusCode": 500, "message": "Stock insuffisant: Insufficient stock. Available: 8" }
+```
+> 📌 La validation gRPC fonctionne correctement. Le Stock Service refuse la commande car la quantité demandée (100) dépasse le stock disponible (8). La commande n'est pas enregistrée.
+
+---
+
+### ✅ Étape 5 — GET /orders (Order Service - Port 3002)
+
+**Requête :**
+```bash
+curl http://localhost:3002/orders
+```
+
+**Réponse :**
+```json
+[
+  {
+    "id": 1,
+    "productId": 1,
+    "quantity": 2,
+    "status": "confirmed",
+    "customerEmail": "jean@dupont.com"
+  }
+]
+```
+> 📌 Seule la commande valide (étape 3) est enregistrée. La commande refusée (étape 4) n'apparaît pas.
+
+---
+
+### ✅ Étape 6 — GraphQL Dashboard (Query Service - Port 3003)
+
+**Requête :**
 ```graphql
 query {
   products { id name price stock }
   orders { id productId quantity status customerEmail }
 }
 ```
+
+**URL :** [http://localhost:3003/graphql](http://localhost:3003/graphql)
+
+**Réponse :**
+```json
+{
+  "data": {
+    "products": [
+      { "id": "1", "name": "Laptop",              "price": 1200, "stock": 10 },
+      { "id": "2", "name": "PC Gamer",             "price": 1200, "stock": 5  },
+      { "id": "3", "name": "PC lenovo",            "price": 1000, "stock": 7  },
+      { "id": "4", "name": "Smartphone Samsung",   "price": 800,  "stock": 15 }
+    ],
+    "orders": [
+      {
+        "id": "1",
+        "productId": "1",
+        "quantity": 2,
+        "status": "confirmed",
+        "customerEmail": "jean@dupont.com"
+      }
+    ]
+  }
+}
+```
+> 📌 Le Query Service agrège les données de plusieurs microservices en **une seule requête GraphQL**. C'est le rôle du Dashboard unifié.
+
+---
+
+## 🔧 Correction Apportée
+
+Un bug a été identifié et corrigé dans le `stock-service` :
+
+- **Problème :** Le décorateur `@GrpcMethod` était placé dans un `Service` (provider) au lieu d'un `Controller`. NestJS gRPC ne découvrait pas le handler → erreur `UNIMPLEMENTED (code 12)`.
+- **Fix :** Création d'un `StockController` qui expose le handler gRPC et délègue la logique métier au `StockService`. Le module a été mis à jour pour enregistrer le controller.
+- **Fix 2 :** Les champs `int64` du proto gRPC peuvent arriver en JavaScript sous forme d'objet `Long` ou de chaîne. Ajout de `Number()` pour garantir la compatibilité avec les clés numériques de la Map en mémoire.
+
+---
+
+## 📊 Résumé des Services
+
+| Service | Transport | Port | Status |
+|---------|-----------|------|--------|
+| catalog-service | REST (HTTP) | 3000 | ✅ |
+| order-service | REST (HTTP) | 3002 | ✅ |
+| stock-service | gRPC | 50051 | ✅ |
+| notification-service | Kafka Consumer | — | ✅ |
+| query-service | GraphQL | 3003 | ✅ |
+| Kafka + Zookeeper | Docker | 9092 / 2181 | ✅ |

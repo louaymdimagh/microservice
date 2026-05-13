@@ -1,0 +1,1 @@
+{"query":"{ products { id name price stock } orders { id productId quantity status customerEmail } }"}
