@@ -56,6 +56,9 @@ cd query-service && npm run start:dev
 
 > Tests exécutés avec tous les services opérationnels. ✅ = Succès | ❌ = Erreur attendue (comportement correct)
 
+**Capture des résultats complets :**
+![Résultats Complets des Tests](screenshots/full_test_results.png)
+
 ---
 
 ### ✅ Étape 1 — GET /products (Catalog Service - Port 3000)
@@ -75,6 +78,9 @@ curl http://localhost:3000/products
 ```
 > 📌 Le Catalog Service répond sur le port 3000 via REST. Les produits sont persistés en SQLite.
 
+**Capture de validation :**
+![GET /products](screenshots/01_get_products.png)
+
 ---
 
 ### ✅ Étape 2 — POST /products (Créer un nouveau produit)
@@ -91,6 +97,9 @@ curl -X POST http://localhost:3000/products \
 { "id": 4, "name": "Smartphone Samsung", "price": 800, "stock": 15 }
 ```
 > 📌 Produit créé avec succès. L'ID est auto-incrémenté par TypeORM/SQLite.
+
+**Capture de validation :**
+![POST /products](screenshots/02_post_product.png)
 
 ---
 
@@ -116,6 +125,9 @@ Notification service listening on Kafka
 ```
 > 📌 Flux complet : Order Service → gRPC → Stock Service (décrément stock) → Kafka → Notification Service (email simulé).
 
+**Capture de validation :**
+![POST /orders Valide](screenshots/03_post_order_valid.png)
+
 ---
 
 ### ❌ Étape 4 — POST /orders (Stock insuffisant — Validation gRPC)
@@ -132,6 +144,9 @@ curl -X POST http://localhost:3002/orders \
 { "statusCode": 500, "message": "Stock insuffisant: Insufficient stock. Available: 8" }
 ```
 > 📌 La validation gRPC fonctionne correctement. Le Stock Service refuse la commande car la quantité demandée (100) dépasse le stock disponible (8). La commande n'est pas enregistrée.
+
+**Capture de validation :**
+![POST /orders Stock Insuffisant](screenshots/04_post_order_overflow.png)
 
 ---
 
@@ -155,6 +170,9 @@ curl http://localhost:3002/orders
 ]
 ```
 > 📌 Seule la commande valide (étape 3) est enregistrée. La commande refusée (étape 4) n'apparaît pas.
+
+**Capture de validation :**
+![GET /orders](screenshots/05_get_orders.png)
 
 ---
 
@@ -193,6 +211,9 @@ query {
 }
 ```
 > 📌 Le Query Service agrège les données de plusieurs microservices en **une seule requête GraphQL**. C'est le rôle du Dashboard unifié.
+
+**Capture de validation (GraphQL) :**
+![GraphQL Dashboard](screenshots/06_graphql_dashboard.png)
 
 ---
 

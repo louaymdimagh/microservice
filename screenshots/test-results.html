@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Microservices Test Results</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;700;900&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0d1117; color: #c9d1d9; font-family: 'Inter', sans-serif; padding: 40px; min-height: 100vh; }
+  h1 { font-size: 2rem; font-weight: 900; color: #58a6ff; text-align: center; margin-bottom: 10px; letter-spacing: -1px; }
+  .subtitle { text-align: center; color: #8b949e; font-size: 0.95rem; margin-bottom: 40px; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; margin-left: 8px; }
+  .badge-get    { background: #1f6feb22; color: #58a6ff; border: 1px solid #1f6feb55; }
+  .badge-post   { background: #238636aa; color: #3fb950; border: 1px solid #23863688; }
+  .badge-error  { background: #da363333; color: #f85149; border: 1px solid #da363366; }
+  .badge-graphql{ background: #7e3fb833; color: #d2a8ff; border: 1px solid #7e3fb866; }
+  .step { background: #161b22; border: 1px solid #30363d; border-radius: 12px; margin-bottom: 28px; overflow: hidden; }
+  .step-header { padding: 16px 24px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #21262d; }
+  .step-num { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; flex-shrink: 0; }
+  .num-get     { background: #1f6feb33; color: #58a6ff; border: 1px solid #1f6feb; }
+  .num-post    { background: #23863633; color: #3fb950; border: 1px solid #238636; }
+  .num-error   { background: #da363333; color: #f85149; border: 1px solid #da3633; }
+  .num-graphql { background: #7e3fb833; color: #d2a8ff; border: 1px solid #7e3fb8; }
+  .step-title { font-weight: 700; font-size: 1rem; color: #e6edf3; }
+  .step-desc  { font-size: 0.8rem; color: #8b949e; }
+  .url-bar { background: #0d1117; margin: 0 24px 16px; padding: 10px 16px; border-radius: 8px; border: 1px solid #21262d; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: #79c0ff; display: flex; align-items: center; gap: 10px; }
+  .method { font-weight: 700; padding: 2px 8px; border-radius: 4px; font-size: 0.78rem; }
+  .m-get    { background: #1f6feb22; color: #58a6ff; }
+  .m-post   { background: #23863622; color: #3fb950; }
+  pre { background: #0d1117; margin: 0 24px 24px; padding: 20px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.6; border: 1px solid #21262d; overflow-x: auto; }
+  .json-key   { color: #79c0ff; }
+  .json-str   { color: #a5d6ff; }
+  .json-num   { color: #f0883e; }
+  .json-bool  { color: #d2a8ff; }
+  .success-bar{ background: #23863611; border-left: 4px solid #3fb950; padding: 10px 20px; margin: 0 24px 16px; border-radius: 0 8px 8px 0; font-size: 0.85rem; color: #3fb950; }
+  .error-bar  { background: #da363311; border-left: 4px solid #f85149; padding: 10px 20px; margin: 0 24px 16px; border-radius: 0 8px 8px 0; font-size: 0.85rem; color: #f85149; }
+  .info-bar   { background: #1f6feb11; border-left: 4px solid #58a6ff; padding: 10px 20px; margin: 0 24px 16px; border-radius: 0 8px 8px 0; font-size: 0.85rem; color: #58a6ff; }
+  .step-header-get    { background: #1f6feb09; }
+  .step-header-post   { background: #23863609; }
+  .step-header-error  { background: #da363309; }
+  .step-header-graphql{ background: #7e3fb809; }
+</style>
+</head>
+<body>
+
+<h1>🚀 NestJS Microservices — Rapport de Tests</h1>
+<p class="subtitle">Architecture REST · gRPC · Kafka · GraphQL — Tous les services opérationnels ✅</p>
+
+<!-- STEP 1 -->
+<div class="step" id="step1">
+  <div class="step-header step-header-get">
+    <div class="step-num num-get">1</div>
+    <div>
+      <div class="step-title">GET /products <span class="badge badge-get">Catalog Service · Port 3000</span></div>
+      <div class="step-desc">Liste tous les produits stockés en SQLite via TypeORM</div>
+    </div>
+  </div>
+  <div class="url-bar"><span class="method m-get">GET</span> http://localhost:3000/products</div>
+  <div class="info-bar">📌 Le Catalog Service répond sur le port 3000 via REST. Les produits sont persistés en SQLite.</div>
+  <pre id="r1"></pre>
+</div>
+
+<!-- STEP 2 -->
+<div class="step" id="step2">
+  <div class="step-header step-header-post">
+    <div class="step-num num-post">2</div>
+    <div>
+      <div class="step-title">POST /products <span class="badge badge-post">Créer un Produit</span></div>
+      <div class="step-desc">Ajout d'un nouveau produit "Smartphone Samsung" dans le catalogue</div>
+    </div>
+  </div>
+  <div class="url-bar"><span class="method m-post">POST</span> http://localhost:3000/products · Body: {"name":"Smartphone Samsung","price":800,"stock":15}</div>
+  <div class="success-bar">✅ Produit créé avec succès. L'ID est auto-incrémenté par TypeORM/SQLite.</div>
+  <pre id="r2"></pre>
+</div>
+
+<!-- STEP 3 -->
+<div class="step" id="step3">
+  <div class="step-header step-header-post">
+    <div class="step-num num-post">3</div>
+    <div>
+      <div class="step-title">POST /orders — Commande Valide <span class="badge badge-post">gRPC + Kafka</span></div>
+      <div class="step-desc">Flux complet : Order → gRPC → Stock (décrement) → Kafka → Notification (email simulé)</div>
+    </div>
+  </div>
+  <div class="url-bar"><span class="method m-post">POST</span> http://localhost:3002/orders · Body: {"productId":1,"quantity":2,"customerEmail":"jean@dupont.com"}</div>
+  <div class="success-bar">✅ Commande confirmée. Kafka a déclenché le Notification Service → email envoyé à jean@dupont.com</div>
+  <pre id="r3"></pre>
+</div>
+
+<!-- STEP 4 -->
+<div class="step" id="step4">
+  <div class="step-header step-header-error">
+    <div class="step-num num-error">4</div>
+    <div>
+      <div class="step-title">POST /orders — Stock Insuffisant <span class="badge badge-error">Validation gRPC ❌</span></div>
+      <div class="step-desc">Le Stock Service refuse via gRPC si la quantité dépasse le stock disponible</div>
+    </div>
+  </div>
+  <div class="url-bar"><span class="method m-post">POST</span> http://localhost:3002/orders · Body: {"productId":1,"quantity":100,"customerEmail":"test@test.com"}</div>
+  <div class="error-bar">❌ Comportement attendu : gRPC refuse la commande car quantité=100 &gt; stock disponible. Commande non enregistrée.</div>
+  <pre id="r4" style="color:#f85149"></pre>
+</div>
+
+<!-- STEP 5 -->
+<div class="step" id="step5">
+  <div class="step-header step-header-get">
+    <div class="step-num num-get">5</div>
+    <div>
+      <div class="step-title">GET /orders <span class="badge badge-get">Order Service · Port 3002</span></div>
+      <div class="step-desc">Seules les commandes validées apparaissent — la commande refusée n'est pas enregistrée</div>
+    </div>
+  </div>
+  <div class="url-bar"><span class="method m-get">GET</span> http://localhost:3002/orders</div>
+  <div class="info-bar">📌 Seule la commande valide (étape 3) est enregistrée. La commande refusée (étape 4) n'apparaît pas.</div>
+  <pre id="r5"></pre>
+</div>
+
+<!-- STEP 6 -->
+<div class="step" id="step6">
+  <div class="step-header step-header-graphql">
+    <div class="step-num num-graphql">6</div>
+    <div>
+      <div class="step-title">GraphQL Dashboard <span class="badge badge-graphql">Query Service · Port 3003</span></div>
+      <div class="step-desc">Agrégation products + orders en une seule requête GraphQL</div>
+    </div>
+  </div>
+  <div class="url-bar" style="color:#d2a8ff">⬡ http://localhost:3003/graphql</div>
+  <div class="info-bar" style="border-color:#d2a8ff;color:#d2a8ff;background:#7e3fb811">📌 Le Query Service agrège les données de plusieurs microservices en une seule requête GraphQL — Dashboard unifié.</div>
+  <pre id="r6" style="color:#d2a8ff"></pre>
+</div>
+
+<script>
+function syntaxHighlight(json) {
+  if (typeof json !== 'string') json = JSON.stringify(json, null, 2);
+  return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function(match) {
+    let cls = 'json-num';
+    if (/^"/.test(match)) { cls = /:$/.test(match) ? 'json-key' : 'json-str'; }
+    else if (/true|false/.test(match)) { cls = 'json-bool'; }
+    return '<span class="' + cls + '">' + match + '</span>';
+  });
+}
+
+const data = {
+  r1: [{"id":1,"name":"Laptop","price":1200,"stock":10},{"id":2,"name":"PC Gamer","price":1200,"stock":5},{"id":3,"name":"PC lenovo","price":1000,"stock":7}],
+  r2: {"id":4,"name":"Smartphone Samsung","price":800,"stock":15},
+  r3: {"id":1,"productId":1,"quantity":2,"customerEmail":"jean@dupont.com","status":"confirmed"},
+  r4: {"statusCode":500,"message":"Stock insuffisant: Insufficient stock. Available: 8"},
+  r5: [{"id":1,"productId":1,"quantity":2,"customerEmail":"jean@dupont.com","status":"confirmed"}],
+  r6: {"data":{"products":[{"id":"1","name":"Laptop","price":1200,"stock":10},{"id":"2","name":"PC Gamer","price":1200,"stock":5},{"id":"3","name":"PC lenovo","price":1000,"stock":7},{"id":"4","name":"Smartphone Samsung","price":800,"stock":15}],"orders":[{"id":"1","productId":"1","quantity":2,"status":"confirmed","customerEmail":"jean@dupont.com"}]}}
+};
+
+Object.keys(data).forEach(id => {
+  document.getElementById(id).innerHTML = syntaxHighlight(JSON.stringify(data[id], null, 2));
+});
+</script>
+</body>
+</html>

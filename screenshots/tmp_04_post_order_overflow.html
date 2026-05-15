@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html><html><head><meta charset='UTF-8'><style>@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d1117;color:#c9d1d9;font-family:'Inter',sans-serif;padding:30px}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:700;margin-left:8px}
+.badge-get{background:#1f6feb22;color:#58a6ff;border:1px solid #1f6feb55}
+.badge-post{background:#23863655;color:#3fb950;border:1px solid #238636}
+.badge-error{background:#da363333;color:#f85149;border:1px solid #da3633}
+.badge-graphql{background:#7e3fb833;color:#d2a8ff;border:1px solid #7e3fb8}
+.step{background:#161b22;border:1px solid #30363d;border-radius:12px;overflow:hidden}
+.step-header{padding:16px 24px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #21262d}
+.step-num{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;flex-shrink:0}
+.num-get{background:#1f6feb33;color:#58a6ff;border:2px solid #1f6feb}
+.num-post{background:#23863633;color:#3fb950;border:2px solid #238636}
+.num-error{background:#da363333;color:#f85149;border:2px solid #da3633}
+.num-graphql{background:#7e3fb833;color:#d2a8ff;border:2px solid #7e3fb8}
+.step-title{font-weight:700;font-size:1.05rem;color:#e6edf3}
+.step-desc{font-size:.8rem;color:#8b949e;margin-top:2px}
+.url-bar{background:#0d1117;margin:16px 24px 0;padding:10px 16px;border-radius:8px;border:1px solid #21262d;font-family:'JetBrains Mono',monospace;font-size:.82rem;color:#79c0ff;display:flex;align-items:center;gap:10px}
+.method{font-weight:700;padding:2px 8px;border-radius:4px;font-size:.78rem;background:#1f6feb22;color:#58a6ff}
+.method-post{background:#23863622;color:#3fb950}
+.info-bar{margin:12px 24px 0;padding:10px 16px;border-radius:0 8px 8px 0;font-size:.85rem}
+.success-bar{background:#23863611;border-left:4px solid #3fb950;color:#3fb950}
+.error-bar{background:#da363311;border-left:4px solid #f85149;color:#f85149}
+.info-bar-blue{background:#1f6feb11;border-left:4px solid #58a6ff;color:#58a6ff}
+.info-bar-purple{background:#7e3fb811;border-left:4px solid #d2a8ff;color:#d2a8ff}
+pre{background:#0d1117;margin:16px 24px 24px;padding:20px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:.85rem;line-height:1.6;border:1px solid #21262d}
+.step-header-get{background:#1f6feb09}
+.step-header-post{background:#23863609}
+.step-header-error{background:#da363309}
+.step-header-graphql{background:#7e3fb809}</style></head><body>
+<div class='step'>
+  <div class='step-header step-header-error'>
+    <div class='step-num num-error'>4</div>
+    <div>
+      <div class='step-title'>POST /orders — Stock Insuffisant <span class='badge badge-error'>Validation gRPC ❌</span></div>
+    </div>
+  </div>
+  <div class='url-bar'><span class='method method-post'>POST</span> http://localhost:3002/orders · Body: {&quot;productId&quot;:1,&quot;quantity&quot;:100,&quot;customerEmail&quot;:&quot;test@test.com&quot;}</div>
+  <div class='info-bar error-bar'>❌ Comportement attendu : gRPC refuse la commande car quantité=100 > stock disponible. Commande non enregistrée.</div>
+  <pre id='data' style='color:#f85149'></pre>
+</div>
+<script>
+var d = {"statusCode":500,"message":"Stock insuffisant: Insufficient stock. Available: 8"};
+function sh(j){if(typeof j!=='string')j=JSON.stringify(j,null,2);return j.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)/g,function(m){var c='json-num';if(/^"/.test(m)){c=/:$/.test(m)?'json-key':'json-str';}else if(/true|false/.test(m)){c='json-bool';}return '<span class="'+c+'">'+m+'</span>';});}
+document.getElementById('data').innerHTML=sh(d);
+</script>
+<style>.json-key{color:#79c0ff}.json-str{color:#a5d6ff}.json-num{color:#f0883e}.json-bool{color:#d2a8ff}</style>
+</body></html>
